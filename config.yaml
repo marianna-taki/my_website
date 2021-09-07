@@ -8,8 +8,7 @@ params:
   banner:
     buttonText: Get Started
     subtitle: |-
-      A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
-      AND RELEASED UNDER THE CREATIVE COMMONS.
+      GET TO KNOW ME
     title: Hi, my name is Marianna
   blog: {}
   contact:
@@ -82,8 +81,8 @@ params:
     enable: yes
     showcase:
       - image: pic01.jpg
-        subtitle: Ipsum Dolor Sit Amet
-        title: Aliquam
+        subtitle: Biography
+        title: About me
         url: blogs/marianna
       - image: pic02.jpg
         subtitle: Feugiat Amet Tempus
