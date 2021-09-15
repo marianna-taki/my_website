@@ -1,0 +1,102 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: 
+keywords: ""
+slug: german_election
+title: Opinion polls for the 2021 German elections
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+library(rvest) # to scrape wikipedia page
+```
+
+
+The Guardian newspaper has an [election poll tracker for the upcoming German election](https://www.theguardian.com/world/2021/aug/20/german-election-poll-tracker-who-will-be-the-next-chancellor). The list of the opinion polls since Jan 2021 can be found at [Wikipedia](https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_German_federal_election) and your task is to reproduce the graph similar to the one produced by the Guardian.
+
+
+```{r scrape_wikipedia_polling_data, warnings= FALSE, message=FALSE, echo=FALSE}
+url <- "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_German_federal_election"
+# https://www.economist.com/graphic-detail/who-will-succeed-angela-merkel
+# https://www.theguardian.com/world/2021/jun/21/german-election-poll-tracker-who-will-be-the-next-chancellor
+
+
+# get tables that exist on wikipedia page 
+tables <- url %>% 
+  read_html() %>% 
+  html_nodes(css="table")
+
+
+# parse HTML tables into a dataframe called polls 
+# Use purr::map() to create a list of all tables in URL
+polls <- map(tables, . %>% 
+             html_table(fill=TRUE)%>% 
+             janitor::clean_names())
+
+
+# list of opinion polls
+german_election_polls <- polls[[1]] %>% # the first table on the page contains the list of all opinions polls
+  slice(2:(n()-1)) %>%  # drop the first row, as it contains again the variable names and last row that contains 2017 results
+  mutate(
+         # polls are shown to run from-to, e.g. 9-13 Aug 2021. We keep the last date, 13 Aug here, as the poll date
+         # and we extract it by picking the last 11 characters from that field
+         end_date = str_sub(fieldwork_date, -11),
+         
+         # end_date is still a string, so we convert it into a date object using lubridate::dmy()
+         end_date = dmy(end_date),
+         
+         # we also get the month and week number from the date, if we want to do analysis by month- week, etc.
+         month = month(end_date),
+         week = isoweek(end_date)
+         )
+```
+
+```{r graph German election polls}
+german_election_polls %>% select(union,spd,af_d, fdp, linke, grune, end_date)%>%
+  pivot_longer(.,cols= c(union,spd,af_d,fdp,linke,grune), 
+               names_to = "Political_Parties",values_to = "val") %>%
+  ggplot(aes(x= end_date, y= val, fill= Political_Parties, 
+             colour= Political_Parties))+
+  geom_point(alpha=0.5)+
+  geom_smooth(se=FALSE)+
+  scale_y_continuous(labels=function(x) paste0(x,"%"))+
+  scale_x_date(date_labels = "%b %y")+
+  xlab("Date")+
+  ylab("Percentage of votes")+
+  labs(title= "German Election Polls 2021")+
+  scale_color_manual(values=c("#0099FF", "#FFFF00", "#339933", "#CC0099", 
+                              "#FF3300", "#000000"))+ 
+  theme(plot.title=element_text(hjust=0.5))+
+  knitr::opts_chunk$set(fig.width=unit(10,"cm"), fig.height=unit(10,"cm"))
+```
+

@@ -1,0 +1,34 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: 
+keywords: ""
+slug: german_election
+title: Opinion polls for the 2021 German elections
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>The Guardian newspaper has an <a href="https://www.theguardian.com/world/2021/aug/20/german-election-poll-tracker-who-will-be-the-next-chancellor">election poll tracker for the upcoming German election</a>. The list of the opinion polls since Jan 2021 can be found at <a href="https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_German_federal_election">Wikipedia</a> and your task is to reproduce the graph similar to the one produced by the Guardian.</p>
+<pre class="r"><code>german_election_polls %&gt;% select(union,spd,af_d, fdp, linke, grune, end_date)%&gt;%
+  pivot_longer(.,cols= c(union,spd,af_d,fdp,linke,grune), 
+               names_to = &quot;Political_Parties&quot;,values_to = &quot;val&quot;) %&gt;%
+  ggplot(aes(x= end_date, y= val, fill= Political_Parties, 
+             colour= Political_Parties))+
+  geom_point(alpha=0.5)+
+  geom_smooth(se=FALSE)+
+  scale_y_continuous(labels=function(x) paste0(x,&quot;%&quot;))+
+  scale_x_date(date_labels = &quot;%b %y&quot;)+
+  xlab(&quot;Date&quot;)+
+  ylab(&quot;Percentage of votes&quot;)+
+  labs(title= &quot;German Election Polls 2021&quot;)+
+  scale_color_manual(values=c(&quot;#0099FF&quot;, &quot;#FFFF00&quot;, &quot;#339933&quot;, &quot;#CC0099&quot;, 
+                              &quot;#FF3300&quot;, &quot;#000000&quot;))+ 
+  theme(plot.title=element_text(hjust=0.5))+
+  knitr::opts_chunk$set(fig.width=unit(10,&quot;cm&quot;), fig.height=unit(10,&quot;cm&quot;))</code></pre>
+<p><img src="/blogs/german_election_files/figure-html/graph%20German%20election%20polls-1.png" width="648" style="display: block; margin: auto;" /></p>

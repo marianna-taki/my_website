@@ -1,0 +1,71 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: pic09.jpg
+keywords: ""
+slug: german_election
+title: German elections graph
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="challenge-2-opinion-polls-for-the-2021-german-elections" class="section level1">
+<h1>Challenge 2: Opinion polls for the 2021 German elections</h1>
+<p>The Guardian newspaper has an <a href="https://www.theguardian.com/world/2021/aug/20/german-election-poll-tracker-who-will-be-the-next-chancellor">election poll tracker for the upcoming German election</a>. The list of the opinion polls since Jan 2021 can be found at <a href="https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_German_federal_election">Wikipedia</a> and your task is to reproduce the graph similar to the one produced by the Guardian.</p>
+<p>The following code will scrape the wikipedia page and import the table in a dataframe.</p>
+<pre class="r"><code>url &lt;- &quot;https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_German_federal_election&quot;
+# https://www.economist.com/graphic-detail/who-will-succeed-angela-merkel
+# https://www.theguardian.com/world/2021/jun/21/german-election-poll-tracker-who-will-be-the-next-chancellor
+
+
+# get tables that exist on wikipedia page 
+tables &lt;- url %&gt;% 
+  read_html() %&gt;% 
+  html_nodes(css=&quot;table&quot;)
+
+
+# parse HTML tables into a dataframe called polls 
+# Use purr::map() to create a list of all tables in URL
+polls &lt;- map(tables, . %&gt;% 
+             html_table(fill=TRUE)%&gt;% 
+             janitor::clean_names())
+
+
+# list of opinion polls
+german_election_polls &lt;- polls[[1]] %&gt;% # the first table on the page contains the list of all opinions polls
+  slice(2:(n()-1)) %&gt;%  # drop the first row, as it contains again the variable names and last row that contains 2017 results
+  mutate(
+         # polls are shown to run from-to, e.g. 9-13 Aug 2021. We keep the last date, 13 Aug here, as the poll date
+         # and we extract it by picking the last 11 characters from that field
+         end_date = str_sub(fieldwork_date, -11),
+         
+         # end_date is still a string, so we convert it into a date object using lubridate::dmy()
+         end_date = dmy(end_date),
+         
+         # we also get the month and week number from the date, if we want to do analysis by month- week, etc.
+         month = month(end_date),
+         week = isoweek(end_date)
+         )</code></pre>
+<pre class="r"><code>german_election_polls %&gt;% select(union,spd,af_d, fdp, linke, grune, end_date)%&gt;%
+  pivot_longer(.,cols= c(union,spd,af_d,fdp,linke,grune), 
+               names_to = &quot;Political_Parties&quot;,values_to = &quot;val&quot;) %&gt;%
+  ggplot(aes(x= end_date, y= val, fill= Political_Parties, 
+             colour= Political_Parties))+
+  geom_point(alpha=0.5)+
+  geom_smooth(se=FALSE)+
+  scale_y_continuous(labels=function(x) paste0(x,&quot;%&quot;))+
+  scale_x_date(date_labels = &quot;%b %y&quot;)+
+  xlab(&quot;Date&quot;)+
+  ylab(&quot;Percentage of votes&quot;)+
+  labs(title= &quot;German Election Polls 2021&quot;)+
+  scale_color_manual(values=c(&quot;#0099FF&quot;, &quot;#FFFF00&quot;, &quot;#339933&quot;, &quot;#CC0099&quot;, 
+                              &quot;#FF3300&quot;, &quot;#000000&quot;))+ 
+  theme(plot.title=element_text(hjust=0.5))+
+  knitr::opts_chunk$set(fig.width=unit(10,&quot;cm&quot;), fig.height=unit(10,&quot;cm&quot;))</code></pre>
+<p><img src="/blogs/Group_Assignment_1_Final_files/figure-html/graph%20German%20election%20polls-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
