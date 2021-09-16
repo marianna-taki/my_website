@@ -1,0 +1,58 @@
+---
+title: "About me"
+date: '2017-10-31T22:42:51-05:00'
+description: 
+draft: no
+image: null
+keywords: ''
+slug: cv
+categories:
+- ''
+- ''
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##EDUCATION 
+
+2021 - 2022	London Business School, London, United Kingdom Reading for Masters in Analytics and Management
+GMAT: 720
+Womens Merit Scholar
+
+2018 - 2021	University Of Bath, Bath, United Kingdom
+BSc (Hons) Mathematics, Overall Programme average 78.55/100, First Class Honours
+Modules include Applied Statistics, Introduction to Econometrics, Generalized Linear Models
+
+##BUSINESS EXPERIENCE 
+
+2021 AXIOM CONSULTING LTD, Nicosia, Cyprus \n
+Loyalty management and relationship marketing Business Analytics Intern (2 months)
+•	Researched and collected information regarding customer segmentation and targeted advertising, focusing on fashion business, to determine main parameters affecting purchasing behaviour
+•	Formulated and pitched methodology required for development of a ranking data model, with purpose of sorting out marketing campaigns, by deploying quantitative and qualitative research methods
+•	Prepared weekly progress reports and presented findings to company CEO receiving constructive feedback and mentoring
+
+2020	PWC, Nicosia, Cyprus \n
+Advisory Intern (1 month) \n
+•	Conducted research on how European countries are developing AI and managed a large database in Excel using functions, to assist with a data analytics project with the European Commission
+•	Collaborated with a team of four in a data-driven project regarding potential business strategies for largest rehabilitation centre in Cyprus; presented and received feedback from board of PwC directors
+•	Completed the PwC Data & Analytics Academy course, learning to utilize data visualization tools Tableau and Alteryx and created useful insights for data-driven team project
+•	Experienced half of internship remotely, due to Covid-19, learning to communicate and work digitally and productively from home
+
+2019	ARCH INSURANCE GROUP, Nicosia, Cyprus Actuary Intern (1 month) \n
+
+
+-	Took an introductory Data Camp SQL course and utilized acquired knowledge to perform an analysis report on a medical company, by creating SQL queries to extract information about patient records
+-	Summarized results from SQL on an Excel database; designed a performance report analysing Loss Ratios using pivot tables, and presented findings to department's Fellow Actuary
+-	Developed Excel functions to calculate insurance claims, premiums and profit margins to aid in determining loss making policies of a medical company
+-	Learned how to use VBA in Excel and designed elementary macros such as loops and 'offset' functions to automate pivot table actions
+   
+
+##ADDITIONAL INFORMATION \n
+•	Led a yearlong volunteering project as part of largest university volunteering society aiming to support multiple local, national and international projects virtually, as a result of Covid-19
+•	Advised and supported a group of four younger students as a university peer mentor
+•	Captained high school basketball team, winning third overall place in national school league
+•	Raised a total of €20 000 in sponsorships as Marketing Manager of a 'F1 In Schools' team and won First place in the National Finals proceeding to compete in world finals in Malaysia
+•	Languages: Greek (native), English (fluent), Spanish (beginner)
+•	IT Skills: R Statistical Software, MATLAB, Ta

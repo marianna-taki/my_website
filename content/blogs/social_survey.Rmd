@@ -1,0 +1,251 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T21:28:43-05:00"
+description: ""
+draft: false
+image: 
+keywords: ""
+slug: social_survey
+title: General Social Survey (GSS)
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+```
+
+
+The [General Social Survey (GSS)](http://www.gss.norc.org/) gathers data on American society in order to monitor and explain trends in attitudes, behaviors, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
+
+In this assignment I analyzed data from the **2016 GSS sample data**, using it to estimate values of *population parameters* of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but only a few of these variables are of interest.
+
+```{r read_gss_data, cache=TRUE, include = FALSE}
+#read data
+gss <- read_csv(here::here("data", "smallgss2016.csv"), 
+                na = c("", "Don't know",
+                       "No answer", "Not applicable"))
+
+glimpse(gss)
+```
+
+
+I started by creating 95% confidence intervals for population parameters. The variables we have are the following:
+
+- hours and minutes spent on email weekly. The responses to these questions are recorded in the `emailhr` and `emailmin` variables. For example, if the response is 2.50 hours, this would be recorded as emailhr = 2 and emailmin = 30.
+- `snapchat`, `instagrm`, `twitter`: whether respondents used these social media in 2016
+- `sex`: Female - Male
+- `degree`: highest education level attained
+
+## Instagram and Snapchat, by sex
+
+These are the relevant steps to calculate the *population* proportion of Snapchat or Instagram users in 2016:
+
+1. Create a  new variable, `snap_insta` that is *Yes* if the respondent reported using any of Snapchat (`snapchat`) or Instagram (`instagrm`), and *No* if not. For reported NA values, the value in the new created variable is also NA.
+
+```{r Either Snapchat or Instagram}
+#Creating a new variable 'Snap_Intsa'
+snap_insta <- gss %>%
+  mutate(snap_insta = if_else(snapchat == "NA" & instagrm == "NA", "NA", 
+                              if_else(snapchat=="Yes" | instagrm == "Yes", "Yes", "No")))
+
+```
+  
+2. Calculate the proportion of Yes’s for `snap_insta` among those who answered the question, i.e. excluding NAs.
+
+```{r Proportion of insta/snap users}
+#Calculating proportion of 'snap_insta' users
+snap_insta %>%
+  filter(snap_insta != "NA") %>%
+  summarize(
+    Proportion_Insta_Snap = count(snap_insta=="Yes") / n())
+
+```
+  
+3. Using the CI formula for proportions and thus constructing 95% CIs for men and women who used either Snapchat or Instagram
+
+```{r 95% CI for men and women using snap or insta}
+
+# CI for Male population
+male_proportion <- snap_insta %>%
+  filter(sex == "Male", snap_insta != "NA") %>%
+  summarize(
+    proportion = count(snap_insta == "Yes")/n(),
+    se = sqrt((proportion*(1 - proportion)/n())),
+    lower_ci = proportion - 1.96*se, #we are using normal distribution to approximate
+                                     #binomial distribution and directly use 1.96 as the critical value
+    upper_ci = proportion + 1.96*se) %>% 
+  knitr::kable(caption = "95% CI for men who used either Snapchat or Instagram") %>%
+  kableExtra::kable_styling()
+
+# CI for Female population
+female_proportion <- snap_insta %>%
+  filter(sex == "Female", snap_insta != "NA") %>%
+  summarize(
+    proportion = count(snap_insta == "Yes")/n(),
+    se = sqrt((proportion*(1 - proportion)/n())),
+    lower_ci = proportion - 1.96*se,
+    upper_ci = proportion + 1.96*se) %>% 
+  knitr::kable(caption = "95% CI for women who used either Snapchat or Instagram") %>%
+  kableExtra::kable_styling()
+
+#print out CIs
+male_proportion
+female_proportion
+```
+
+
+## Twitter, by education level
+
+Next, the *population* proportion of Twitter users by education level in 2016 is estimated:
+
+There are 5 education levels in variable `degree` which, in ascending order of years of education, are Lt high school, High School, Junior college, Bachelor, Graduate. 
+
+
+```{r degree to factor variable, include = FALSE}
+#Filtering the data 
+gss_degree <- gss %>%
+  mutate(
+    degree = factor(degree, ordered = TRUE, levels = c("Lt high school", "High School", "Junior college", "Bachelor", "Graduate")), 
+    bachelor_graduate = if_else(degree>="Bachelor", "Yes", "No")
+  )
+  
+glimpse(gss_degree)
+```
+
+1. A new variable `bachelor_graduate` is constructed that is *Yes* if the respondent has either a `Bachelor` or `Graduate` degree.  I then calculated the proportion of `bachelor_graduate` who do (Yes) and who don't (No) use twitter.
+
+```{r proportion of bachelor graduates using twitter}
+#tidy data and count
+twitter_bachelor <- gss_degree %>%
+  filter(bachelor_graduate == "Yes", twitter != "NA") %>%
+  group_by(bachelor_graduate, twitter) %>%
+  count()
+
+#calculate proportions
+twitter_bachelor_proportions <- twitter_bachelor %>%
+  pivot_wider(names_from = twitter, values_from = n) %>%
+  summarize(
+    Bachelors_using_twitter = Yes/sum(Yes,No),
+    Bachelors_not_using_twitter = 1 - Bachelors_using_twitter
+  ) %>%
+  select(c("Bachelors_using_twitter", "Bachelors_not_using_twitter")) %>% 
+  knitr::kable(caption = "Proportions for bachelor graduates using and not using Twitter") %>%
+  kableExtra::kable_styling()
+  
+twitter_bachelor_proportions
+
+```
+
+2. Using the CI formula for proportions I constructed two 95% CIs for `bachelor_graduate` vs whether they use (Yes) and don't (No) use twitter. 
+
+```{r 95% CI for bachelor_graduate}
+#construct CI using formula
+twitter_bachelor_95 <- twitter_bachelor %>%
+  mutate(
+    count = sum(twitter_bachelor$n),
+    proportion = n/count,
+    se_twitter = sqrt((proportion * (1-proportion))/count),
+    lower_ci =  proportion - 1.96*se_twitter,
+    upper_ci= proportion + 1.96*se_twitter) %>% 
+  select(c("bachelor_graduate","twitter", "lower_ci", "upper_ci")) %>% 
+  knitr::kable(caption = "95% CIs for bachelor graduates who use and do not use Twitter") %>%
+  kableExtra::kable_styling()
+
+twitter_bachelor_95
+
+```
+
+These two confidence intervals do not overlap. There is a significant difference in the proportion of bachelor graduates who do and who do not use Twitter. Therefore, we can make inferences about twitter usage according to whether people are bachelor graduates or not.  
+
+## Email usage
+
+Let's estimate the *population* parameter on time spent on email weekly:
+
+1. Create a new variable called `email` that combines `emailhr` and `emailmin` to reports the number of minutes the respondents spend on email weekly.
+
+```{r calculation of email time}
+#Creating a new variable 
+email_time <- gss %>% 
+  mutate(
+    email = as.numeric(emailhr) * 60 + as.numeric(emailmin))
+
+email_time
+```
+
+2. A visualisation of the distribution is seen below followed by summary statistics of the mean and the median number of minutes respondents spend on email weekly. 
+
+```{r distribution of email time}
+#Visualizing the new variable 'Email'
+ggplot(email_time, 
+       aes(x= email))+
+  geom_density()+
+  theme_bw() +
+  labs (
+    title = "Time Spent on email",
+    x     = "Minutes spent on email weekly")                         
+
+#calculate mean and median
+email_time %>% 
+  summarise(mean_email_time = mean(email, na.rm=TRUE),
+            median_email_time = median(email, na.rm=TRUE))
+
+```
+
+The median is a better measure since the density of time spent is significantly right skewed and extreme values in the right tail pull the mean away from the center. This skewness implies extreme outliers that don't reflect the typical American's email usage.  
+The median is less affected by such extreme values.  
+
+3. Using the `infer` package, I calculated a 95% bootstrap confidence interval for the mean amount of time Americans spend on email weekly. 
+
+```{r calculate CI using bootstrap email time}
+#construct CI using bootstrap
+set.seed(1998)
+library(infer)
+
+bootstrap_email <- email_time %>%
+  specify(response = email) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "mean")
+
+bootstrap_ci <- bootstrap_email %>%
+  get_ci(level = 0.95, type = "percentile") %>% 
+  #"humanize" time units to [__ hrs __ mins]
+  mutate(lower_ci = paste(paste(385 %/% 60, "hrs"), 
+                          paste(385 %% 60, "mins")),
+         upper_ci = paste(paste(448 %/% 60, "hrs"), 
+                          paste(448 %% 60, "mins"))) %>%
+  knitr::kable(caption = "95% CI for weekly email usage of Americans") %>%
+  kableExtra::kable_styling()
+bootstrap_ci
+```
+
+Since we are calculating weekly email, roughly 7 hours per week or 1 hour per day seems normal.  
+
+

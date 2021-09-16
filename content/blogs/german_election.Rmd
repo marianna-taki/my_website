@@ -42,7 +42,8 @@ library(rvest) # to scrape wikipedia page
 ```
 
 
-The Guardian newspaper has an [election poll tracker for the upcoming German election](https://www.theguardian.com/world/2021/aug/20/german-election-poll-tracker-who-will-be-the-next-chancellor). The list of the opinion polls since Jan 2021 can be found at [Wikipedia](https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_German_federal_election) and your task is to reproduce the graph similar to the one produced by the Guardian.
+The Guardian newspaper has an [election poll tracker for the upcoming German election](https://www.theguardian.com/world/2021/aug/20/german-election-poll-tracker-who-will-be-the-next-chancellor). The list of the opinion polls since Jan 2021 was found on [Wikipedia](https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_German_federal_election). My challenge was to reproduce the graph as closely as possible. 
+
 
 
 ```{r scrape_wikipedia_polling_data, warnings= FALSE, message=FALSE, echo=FALSE}
@@ -81,6 +82,8 @@ german_election_polls <- polls[[1]] %>% # the first table on the page contains t
          )
 ```
 
+I used the 'dplyr' and 'ggplot' packages to reproduce the graph. The final output can be found below:
+
 ```{r graph German election polls}
 german_election_polls %>% select(union,spd,af_d, fdp, linke, grune, end_date)%>%
   pivot_longer(.,cols= c(union,spd,af_d,fdp,linke,grune), 
@@ -100,3 +103,4 @@ german_election_polls %>% select(union,spd,af_d, fdp, linke, grune, end_date)%>%
   knitr::opts_chunk$set(fig.width=unit(10,"cm"), fig.height=unit(10,"cm"))
 ```
 
+From the reproduced graph, we can clearly see the upcoming trends for the German elections. It is particularly interesting how the union party has dropped massively in popularity between January 2021 until today, from about 38% of voters to under 20% as of today. This comes in contrast to the SPD who whilst its poll projections remained at about 15% for most of the year, in July 2021 this percentage flew to about 25%, in a very short amount of time. The Green party has also one of the highest percentage of votes but in the past 5 months it has been experiencing a fall in percentages with about 16% of voters reporting to support the Greens today. The battle for who is going to take lead into the German election is one of great interest as the potential of different parties working together brings large implications on the future of the country, but also Europe.

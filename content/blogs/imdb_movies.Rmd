@@ -1,0 +1,129 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: 
+keywords: ""
+slug: imdb_movies
+title: Does Steven Spielberg and Tim Burton have different IMDB ratings?
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-libraries, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(GGally)
+library(readxl)
+library(here)
+library(skimr)
+library(janitor)
+library(broom)
+library(tidyquant)
+library(infer)
+library(openintro)
+```
+
+# IMDB ratings: Differences between directors
+
+We will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or
+not. We reproduce the following graph to analyse any overlap in the 95% confidence intervals.
+
+```{r directors, echo=FALSE, out.width="100%"}
+knitr::include_graphics(here::here("images", "directors.png"), error = FALSE)
+imdb_movies<-read_csv(here::here("data","movies.csv"))
+
+glimpse(imdb_movies)
+```
+    
+Reproduced graph:
+```{r plot mean and confidence interval, fig.width = 12, fig.height = 8}
+#Prepare data and calculate confidence intervals
+imdb_spielberg_burton <- imdb_movies %>%
+  filter(director %in% c("Steven Spielberg", "Tim Burton" )) %>%
+  group_by(director) %>%
+  summarize(
+    average_rating = mean(rating),
+    sd_rating = sd(rating),
+    count_movies = n(),
+    t_critical = qt(0.975, count_movies-1),
+    se = sd_rating/sqrt(count_movies),
+    lower_ci = average_rating - t_critical*se,
+    upper_ci = average_rating + t_critical*se
+  )
+
+ggplot(imdb_spielberg_burton, aes(x=average_rating, 
+                                  y=director, 
+                                  color=director)) +
+  geom_point(size = 8)+
+  geom_errorbarh(aes(xmax = upper_ci, 
+                     xmin = lower_ci), 
+                 height = 0.1, 
+                 size=2)+
+  annotate(geom = "rect", 
+           xmin = 7.275, 
+           xmax = 7.33, 
+           ymin = -Inf, 
+           ymax = Inf, 
+           fill = "grey", 
+           alpha=0.7)+
+  scale_y_discrete(limits = c("Tim Burton","Steven Spielberg"))+
+  theme_bw()+
+  labs(
+    title = "Do Spielberg and Burton have the same mean IMdB ratings?",
+    subtitle = "95% confidence intervals overlap",
+    x = "Mean IMdB Rating",
+  )+
+  geom_text(aes(label = round(average_rating,2)), 
+            size = 7, 
+            vjust = -2, 
+            color = "black", 
+            fontface = "bold")+
+  geom_text(aes(label = round(lower_ci,2)), 
+            size = 6, 
+            vjust = -3,
+            x = imdb_spielberg_burton$lower_ci,
+            color = "black", 
+            fontface = "bold")+
+  geom_text(aes(label = round(upper_ci,2)), 
+            size = 6, 
+            vjust = -3,
+            x = imdb_spielberg_burton$upper_ci,
+            color = "black", 
+            fontface = "bold")+
+  theme(legend.position="none",
+        plot.title = element_text(face = "bold", size = 18),
+        plot.subtitle = element_text(size = 14, face = "bold"),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        axis.title.y = element_text(size = 14, face = "bold"),
+        axis.text.y = element_text(size = 14),
+        axis.text.x = element_text(size = 12)
+        )
+```
+From the graph we can see that 95% confidence intervals for average IMdB ratings for Spielberg and Burton overlap.  
+  
+In addition, we will run a hypothesis test:       
+    
+$H_0: \mu_{Steven Spielberg}-\mu_{Tim Burton}= 0$ vs
+$H_1: \mu_{Steven Spielberg}-\mu_{Tim Burton}\neq 0$
+    
+```{r hypothesis test for directors}
+director_data<- imdb_movies %>% 
+  select(rating,director,title) %>%
+  filter(director %in% c("Steven Spielberg","Tim Burton")) 
+
+t.test(rating~director,data=director_data)
+
+```
+    
+t-stat= 3       
+p-value=0.01       
+      
+From the Test statistics we reject the null hypothesis, as the p-value is less than 5%. In this case it is 1%, so we conclude that the mean IMDB rating for each director is different.  
+

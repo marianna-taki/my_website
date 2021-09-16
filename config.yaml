@@ -62,7 +62,7 @@ params:
       - name: ABOUT ME
         url: blogs/marianna
       - name: CV
-        url: blogs/ipsum
+        url: blogs/cv
     menu: Menu
   #  subtitle: By HTML5 Up
  #   title: Forty
@@ -77,22 +77,22 @@ params:
         subtitle: Plots of top 25 drinking countries
         title: Drinking habits acrosss countries
         url: blogs/homework1
-      - image: pic03.jpg
+      - image: germany.jpg
         subtitle: Plot of 2021 German election polls
         title: German Election Poll
         url: blogs/german_election
       - image: pic04.jpg
-        subtitle: Nisl Sed Aliquam
-        title: Ipsum
-        url: blogs/ipsum
-      - image: pic05.jpg
-        subtitle: Ipsum Dolor Sit Amet
-        title: Consequat
-        url: blogs/ipsum
-      - image: pic06.jpg
-        subtitle: Feugiat Amet Tempus
-        title: Etiam
-        url: blogs/ipsum
+        subtitle: Social media and e-mail usage
+        title: General Social Survey
+        url: blogs/social_survey
+      - image: office.jpg
+        subtitle: Is there discrimination against females in the workplace?
+        title: Omega Plc
+        url: blogs/office_info
+      - image: cinema.jpg
+        subtitle: Steven Spielberg vs Tim Burton
+        title: IMDB Ratings
+        url: blogs/imdb_ratings
   two:
     buttonText: Find out more
     enable: yes
