@@ -1,0 +1,110 @@
+---
+title: "Does Steven Spielberg and Tim Burton have different IMDB ratings?"
+date: '2017-10-31T22:26:09-05:00'
+description: Lorem Etiam Nullam
+draft: no
+image: null
+keywords: ''
+slug: imdb_movies
+categories:
+- ''
+- ''
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="imdb-ratings-differences-between-directors" class="section level1">
+<h1>IMDB ratings: Differences between directors</h1>
+<p>We will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton is the same or
+not. We produce the following graph to analyze any overlap in the 95% confidence intervals.</p>
+<p>Reproduced graph:</p>
+<pre class="r"><code>#Prepare data and calculate confidence intervals
+imdb_spielberg_burton &lt;- imdb_movies %&gt;%
+  filter(director %in% c(&quot;Steven Spielberg&quot;, &quot;Tim Burton&quot; )) %&gt;%
+  group_by(director) %&gt;%
+  summarize(
+    average_rating = mean(rating),
+    sd_rating = sd(rating),
+    count_movies = n(),
+    t_critical = qt(0.975, count_movies-1),
+    se = sd_rating/sqrt(count_movies),
+    lower_ci = average_rating - t_critical*se,
+    upper_ci = average_rating + t_critical*se
+  )
+
+#Use ggplot package to reproduce the required plot
+ggplot(imdb_spielberg_burton, aes(x=average_rating, 
+                                  y=director, 
+                                  color=director)) +
+  geom_point(size = 8)+
+  geom_errorbarh(aes(xmax = upper_ci, 
+                     xmin = lower_ci), 
+                 height = 0.1, 
+                 size=2)+
+  annotate(geom = &quot;rect&quot;, 
+           xmin = 7.275, 
+           xmax = 7.33, 
+           ymin = -Inf, 
+           ymax = Inf, 
+           fill = &quot;grey&quot;, 
+           alpha=0.7)+
+  scale_y_discrete(limits = c(&quot;Tim Burton&quot;,&quot;Steven Spielberg&quot;))+
+  theme_bw()+
+  labs(
+    title = &quot;Do Spielberg and Burton have the same mean IMdB ratings?&quot;,
+    subtitle = &quot;95% confidence intervals overlap&quot;,
+    x = &quot;Mean IMdB Rating&quot;,
+  )+
+  geom_text(aes(label = round(average_rating,2)), 
+            size = 7, 
+            vjust = -2, 
+            color = &quot;black&quot;, 
+            fontface = &quot;bold&quot;)+
+  geom_text(aes(label = round(lower_ci,2)), 
+            size = 6, 
+            vjust = -3,
+            x = imdb_spielberg_burton$lower_ci,
+            color = &quot;black&quot;, 
+            fontface = &quot;bold&quot;)+
+  geom_text(aes(label = round(upper_ci,2)), 
+            size = 6, 
+            vjust = -3,
+            x = imdb_spielberg_burton$upper_ci,
+            color = &quot;black&quot;, 
+            fontface = &quot;bold&quot;)+
+  theme(legend.position=&quot;none&quot;,
+        plot.title = element_text(face = &quot;bold&quot;, size = 18),
+        plot.subtitle = element_text(size = 14, face = &quot;bold&quot;),
+        axis.title.x = element_text(size = 14, face = &quot;bold&quot;),
+        axis.title.y = element_text(size = 14, face = &quot;bold&quot;),
+        axis.text.y = element_text(size = 14),
+        axis.text.x = element_text(size = 12)
+        )</code></pre>
+<p><img src="/blogs/imdb_movies_files/figure-html/plot%20mean%20and%20confidence%20interval-1.png" width="1152" />
+From the graph we can see that the 95% confidence intervals for average IMdB ratings for Spielberg and Burton overlap.</p>
+<p>In addition, we will run a hypothesis test:</p>
+<p>I started by setting out my hypotheses followed by a t-test.</p>
+<p><span class="math inline">\(H_0: \mu_{Steven Spielberg}-\mu_{Tim Burton}= 0\)</span> vs
+<span class="math inline">\(H_1: \mu_{Steven Spielberg}-\mu_{Tim Burton}\neq 0\)</span></p>
+<pre class="r"><code>director_data&lt;- imdb_movies %&gt;% 
+  select(rating,director,title) %&gt;%
+  filter(director %in% c(&quot;Steven Spielberg&quot;,&quot;Tim Burton&quot;)) 
+
+t.test(rating~director,data=director_data)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  rating by director
+## t = 2.7144, df = 30.812, p-value = 0.01078
+## alternative hypothesis: true difference in means between group Steven Spielberg and group Tim Burton is not equal to 0
+## 95 percent confidence interval:
+##  0.1596624 1.1256637
+## sample estimates:
+## mean in group Steven Spielberg       mean in group Tim Burton 
+##                       7.573913                       6.931250</code></pre>
+<p>t-stat= 3<br />
+p-value=0.01</p>
+<p>From the Test statistics we reject the null hypothesis, as the p-value is less than 5%. In this case it is 1%, so we conclude that the mean IMDB rating for each director is different.</p>
+<p>It seems that Steven Spielberg has a higher average IMDB rating than Tim Burton.</p>
+</div>

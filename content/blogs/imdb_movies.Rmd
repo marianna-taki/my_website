@@ -1,21 +1,21 @@
 ---
-categories:
-- ""
-- ""
-date: "2017-10-31T22:26:09-05:00"
+title: "Does Steven Spielberg and Tim Burton have different IMDB ratings?"
+date: '2017-10-31T22:26:09-05:00'
 description: Lorem Etiam Nullam
-draft: false
-image: 
-keywords: ""
+draft: no
+image: null
+keywords: ''
 slug: imdb_movies
-title: Does Steven Spielberg and Tim Burton have different IMDB ratings?
+categories:
+- ''
+- ''
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load-libraries, echo=FALSE}
+```{r load-libraries, echo=FALSE, include= FALSE}
 library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
 library(mosaic)
 library(ggthemes)
@@ -32,10 +32,10 @@ library(openintro)
 
 # IMDB ratings: Differences between directors
 
-We will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or
-not. We reproduce the following graph to analyse any overlap in the 95% confidence intervals.
+We will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton is the same or
+not. We produce the following graph to analyze any overlap in the 95% confidence intervals.
 
-```{r directors, echo=FALSE, out.width="100%"}
+```{r directors, echo=FALSE, out.width="100%", include = FALSE}
 knitr::include_graphics(here::here("images", "directors.png"), error = FALSE)
 imdb_movies<-read_csv(here::here("data","movies.csv"))
 
@@ -58,6 +58,7 @@ imdb_spielberg_burton <- imdb_movies %>%
     upper_ci = average_rating + t_critical*se
   )
 
+#Use ggplot package to reproduce the required plot
 ggplot(imdb_spielberg_burton, aes(x=average_rating, 
                                   y=director, 
                                   color=director)) +
@@ -106,12 +107,16 @@ ggplot(imdb_spielberg_burton, aes(x=average_rating,
         axis.text.x = element_text(size = 12)
         )
 ```
-From the graph we can see that 95% confidence intervals for average IMdB ratings for Spielberg and Burton overlap.  
+From the graph we can see that the 95% confidence intervals for average IMdB ratings for Spielberg and Burton overlap.  
   
 In addition, we will run a hypothesis test:       
-    
+
+I started by setting out my hypotheses followed by a t-test.
+
+
 $H_0: \mu_{Steven Spielberg}-\mu_{Tim Burton}= 0$ vs
 $H_1: \mu_{Steven Spielberg}-\mu_{Tim Burton}\neq 0$
+
     
 ```{r hypothesis test for directors}
 director_data<- imdb_movies %>% 
@@ -126,4 +131,6 @@ t-stat= 3
 p-value=0.01       
       
 From the Test statistics we reject the null hypothesis, as the p-value is less than 5%. In this case it is 1%, so we conclude that the mean IMDB rating for each director is different.  
+
+It seems that Steven Spielberg has a higher average IMDB rating than Tim Burton. 
 
