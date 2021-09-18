@@ -3,12 +3,9 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:13-05:00"
-description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna
-  sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa
-  sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
-  consequat tincidunt. Vivamus et sagittis tempus.
+description: 
 draft: false
-image: 
+image: wine.jpg
 keywords: ""
 slug: homework1
 title: Drinking habits acrosss countries
@@ -43,6 +40,7 @@ library(janitor)
 library(vroom)
 library(tidyquant)
 library(rvest) # to scrape wikipedia page
+library(ggplot2)
 ```
 
 
@@ -57,11 +55,13 @@ data(drinks)
 
 ```
 
-After cleaning the data I decided to use bar plots to look at the consumption of the top drinking countries. Below you can see the three graphs for the top 25 beer, wine and spirit drinking countries:
+After cleaning the data I decided to use bar plots to look at the consumption of the top drinking countries. 
+I used the ggplot package to produce the following graphs.
+Below you can see the three graphs for the top 25 beer, wine and spirit drinking countries:
 
 
-```{r beer_plot, echo=FALSE}
-library(ggplot2)
+```{r beer_plot}
+
 drinks %>%
   slice_max(order_by = beer_servings, n=25) %>%
   ggplot(aes(x=beer_servings, y=fct_reorder(country,beer_servings)))+
@@ -79,7 +79,7 @@ drinks %>%
 
  It is certainly no surprise that people in Czech are among the most beer-consuming countries, but Namibia is a little surprising with about 370 yearly beer cans consumed per person. That implies every person drinks on average about 1 beer per day. However, Namibia is a German colony and therefore has adopted the German Beer drinking traditions. A little surprising is the fact that Germany didn't make it into the Top 3, but Gabon has. 
 
-```{r wine_plot, echo=FALSE}
+```{r wine_plot}
 drinks %>%
   slice_max(order_by = wine_servings, n=25) %>%
   ggplot(aes(x=wine_servings, y=fct_reorder(country,wine_servings)))+
@@ -98,7 +98,7 @@ drinks %>%
 
 Regarding wine consumption, it is no surprise that people in France are the heaviest consumers having several world famous wineries. The average consumption is about 370 glasses of wine per person per year. 
 
-```{r spirit_plot, echo=FALSE}
+```{r spirit_plot}
 drinks %>%
   slice_max(order_by = spirit_servings, n=25) %>%
   ggplot(aes(x=spirit_servings, y=fct_reorder(country,spirit_servings)))+
