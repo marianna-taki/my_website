@@ -72,7 +72,7 @@ params:
       - image: pic01.jpg
         subtitle: Biography
         title: About me
-        url: blogs/marianna
+        url: blogs/hi
       - image: wine.jpg
         subtitle: Plots of top 25 drinking countries
         title: Drinking habits acrosss countries
