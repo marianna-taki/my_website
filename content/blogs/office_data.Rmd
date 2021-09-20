@@ -3,9 +3,9 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:09-05:00"
-description: Lorem Etiam Nullam
+description: Is there pay discrimination against females in the workplace?
 draft: false
-image: 
+image: office.jpg
 keywords: ""
 slug: office_info
 title: Investigating pay discrimination in Omega Plc

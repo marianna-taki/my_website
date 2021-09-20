@@ -3,9 +3,9 @@ categories:
 - ""
 - ""
 date: "2017-10-31T21:28:43-05:00"
-description: ""
+description: Social media and e-mail usage
 draft: false
-image: 
+image: social.jpg
 keywords: ""
 slug: social_survey
 title: General Social Survey (GSS)

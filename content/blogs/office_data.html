@@ -1,0 +1,709 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Is there pay discrimination against females in the workplace?
+draft: false
+image: office.jpg
+keywords: ""
+slug: office_info
+title: Investigating pay discrimination in Omega Plc
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+<link href="/rmarkdown-libs/lightable/lightable.css" rel="stylesheet" />
+
+
+<p># Omega Group plc- Pay Discrimination</p>
+<p>At the last board meeting of Omega Group Plc., the headquarters of a
+large multinational company, the issue was raised that women were being
+discriminated in the company, in the sense that the salaries were not
+the same for male and female executives. A quick analysis of a sample of
+50 employees (of which 24 men and 26 women) revealed that the average
+salary for men was about 8,700 higher than for women. This seemed like a
+considerable difference, so it was decided that a further analysis of
+the company salaries was warranted.</p>
+<p>The objective is to find out whether there is indeed a significant
+difference between the salaries of men and women, and whether the
+difference is due to discrimination or whether it is based on another,
+possibly valid, determining factor.</p>
+<div id="loading-the-data" class="section level2">
+<h2>Loading the data</h2>
+<pre class="r"><code>omega &lt;- read_csv(here::here(&quot;data&quot;, &quot;omega.csv&quot;))
+glimpse(omega) # examine the data frame</code></pre>
+<pre><code>## Rows: 50
+## Columns: 3
+## $ salary     &lt;dbl&gt; 81894, 69517, 68589, 74881, 65598, 76840, 78800, 70033, 635…
+## $ gender     &lt;chr&gt; &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;ma…
+## $ experience &lt;dbl&gt; 16, 25, 15, 33, 16, 19, 32, 34, 1, 44, 7, 14, 33, 19, 24, 3…</code></pre>
+<pre class="r"><code>skim(omega)</code></pre>
+<table>
+<caption>(#tab:load_omega_data)Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">omega</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">50</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">gender</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">salary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">68717</td>
+<td align="right">8638.2</td>
+<td align="right">47033</td>
+<td align="right">63303.16</td>
+<td align="right">68847</td>
+<td align="right">74777.7</td>
+<td align="right">84576</td>
+<td align="left">▁▃▇▆▅</td>
+</tr>
+<tr class="even">
+<td align="left">experience</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">14</td>
+<td align="right">11.9</td>
+<td align="right">0</td>
+<td align="right">2.25</td>
+<td align="right">15</td>
+<td align="right">20.8</td>
+<td align="right">44</td>
+<td align="left">▇▃▅▂▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="relationship-salary---gender" class="section level2">
+<h2>Relationship Salary - Gender ?</h2>
+<p>The data frame <code>omega</code> contains the salaries for the sample of 50 executives in the company.</p>
+<p>We calculate summary statistics on salary by gender and also create and print a dataframe where, for each gender, we show the mean, SD, sample size, the t-critical, the SE, the margin of error, and the low/high endpoints of a 95% confidence interval.</p>
+<pre class="r"><code># Summary Statistics of salary by gender
+mosaic::favstats (salary ~ gender, data=omega) %&gt;%
+  knitr::kable(bootstrap_options = c (&quot;striped&quot;,&quot;hover&quot;,&quot;condensed&quot;,&quot;responsive&quot;)) %&gt;%
+  kableExtra::kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+gender
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+median
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+missing
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+47033
+</td>
+<td style="text-align:right;">
+60338
+</td>
+<td style="text-align:right;">
+64618
+</td>
+<td style="text-align:right;">
+70033
+</td>
+<td style="text-align:right;">
+78800
+</td>
+<td style="text-align:right;">
+64543
+</td>
+<td style="text-align:right;">
+7567
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+54768
+</td>
+<td style="text-align:right;">
+68331
+</td>
+<td style="text-align:right;">
+74675
+</td>
+<td style="text-align:right;">
+78568
+</td>
+<td style="text-align:right;">
+84576
+</td>
+<td style="text-align:right;">
+73239
+</td>
+<td style="text-align:right;">
+7463
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># Dataframe with two rows (male-female) and having as columns gender, mean, SD, sample size, 
+# the t-critical value, the standard error, the margin of error, 
+# and the low/high endpoints of a 95% condifence interval
+
+gender_stats &lt;- omega %&gt;%
+  group_by(gender) %&gt;%
+  summarise(mean_salary=mean(salary),
+            sd_salary=sd(salary),
+            count=n(),
+            t_critical=qt(0.975,count-1),
+            se=sd_salary/sqrt(count),
+            margin_of_error=t_critical*se,
+            lower_ci=mean_salary-margin_of_error,
+            upper_ci=mean_salary+margin_of_error) 
+
+gender_stats %&gt;%
+  knitr::kable(bootstrap_options = c (&quot;striped&quot;,&quot;hover&quot;,&quot;condensed&quot;,&quot;responsive&quot;)) %&gt;%
+  kableExtra::kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+gender
+</th>
+<th style="text-align:right;">
+mean_salary
+</th>
+<th style="text-align:right;">
+sd_salary
+</th>
+<th style="text-align:right;">
+count
+</th>
+<th style="text-align:right;">
+t_critical
+</th>
+<th style="text-align:right;">
+se
+</th>
+<th style="text-align:right;">
+margin_of_error
+</th>
+<th style="text-align:right;">
+lower_ci
+</th>
+<th style="text-align:right;">
+upper_ci
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+64543
+</td>
+<td style="text-align:right;">
+7567
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:right;">
+2.06
+</td>
+<td style="text-align:right;">
+1484
+</td>
+<td style="text-align:right;">
+3056
+</td>
+<td style="text-align:right;">
+61486
+</td>
+<td style="text-align:right;">
+67599
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+73239
+</td>
+<td style="text-align:right;">
+7463
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+2.07
+</td>
+<td style="text-align:right;">
+1523
+</td>
+<td style="text-align:right;">
+3151
+</td>
+<td style="text-align:right;">
+70088
+</td>
+<td style="text-align:right;">
+76390
+</td>
+</tr>
+</tbody>
+</table>
+<p>Looking at the summary statistics above, we can conclude that the mean salary of male employees is larger than the female salary with the means being 73200 $ (3 sf) and 64500 $ (3sf) respectively. The medians and quartiles show a similar relationship, ie males having higher earnings than females. Calculating 95% confidence intervals for the two genders we can observe that these two do not overlap and thus we conclude that indeed the mean salary between males and females is significantly different, with males earning more.</p>
+<p>We also run a hypothesis test, assuming as a null hypothesis that the mean difference in salaries is zero, or that, on average, men and women make the same amount of money.</p>
+<p><span class="math inline">\(H_0: \mu_{male}-\mu_{female}= 0\)</span> vs
+<span class="math inline">\(H_1: \mu_{male}-\mu_{female}\neq 0\)</span></p>
+<pre class="r"><code># hypothesis testing using t.test() 
+t.test(salary~gender,data=omega)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  salary by gender
+## t = -4, df = 48, p-value = 2e-04
+## alternative hypothesis: true difference in means between group female and group male is not equal to 0
+## 95 percent confidence interval:
+##  -12973  -4420
+## sample estimates:
+## mean in group female   mean in group male 
+##                64543                73239</code></pre>
+<pre class="r"><code># hypothesis testing using infer package
+hyp_by_gender &lt;- omega %&gt;%
+  # specify variables
+  specify(salary~gender) %&gt;%
+  
+  # assume independence, i.e, there is no difference
+  hypothesize(null = &quot;independence&quot;) %&gt;%
+  
+  # generate 1000 reps, of type &quot;permute&quot;
+  generate(reps = 1000, type = &quot;permute&quot;) %&gt;%
+  
+  # calculate statistic of difference, namely &quot;diff in means&quot;
+  calculate(stat = &quot;diff in means&quot;, order = c(&quot;male&quot;, &quot;female&quot;))
+
+mean_difference&lt;-  omega %&gt;%
+  specify(salary~gender) %&gt;%
+  calculate(stat=&quot;diff in means&quot;,
+            order=c(&quot;male&quot;,&quot;female&quot;))
+
+hyp_by_gender %&gt;% 
+  get_p_value(obs_stat = mean_difference , direction = &quot;two_sided&quot;) %&gt;%
+  knitr::kable(bootstrap_options = c (&quot;striped&quot;,&quot;hover&quot;,&quot;condensed&quot;,&quot;responsive&quot;)) %&gt;%
+  kableExtra::kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+p_value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>The hypothesis tests, both using the t test and the bootstrap simulation, confirm our previous observation. The p-value is approximately 0 and hence the null hypothesis is rejected and we conclude that the means are significantly different. There is a difference between average male and female earnings.</p>
+</div>
+<div id="relationship-experience---gender" class="section level2">
+<h2>Relationship Experience - Gender?</h2>
+<p>At the board meeting, someone raised the issue that there was indeed a
+substantial difference between male and female salaries, but that this
+was attributable to other reasons such as differences in experience. A
+questionnaire send out to the 50 executives in the sample reveals that
+the average experience of the men is approximately 21 years, whereas the
+women only have about 7 years experience on average (see table below).</p>
+<pre class="r"><code># Summary Statistics of salary by gender
+favstats (experience ~ gender, data=omega) %&gt;%
+  knitr::kable(bootstrap_options = c (&quot;striped&quot;,&quot;hover&quot;,&quot;condensed&quot;,&quot;responsive&quot;)) %&gt;%
+  kableExtra::kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+gender
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+median
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+missing
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+3.0
+</td>
+<td style="text-align:right;">
+14.0
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:right;">
+7.38
+</td>
+<td style="text-align:right;">
+8.51
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+15.75
+</td>
+<td style="text-align:right;">
+19.5
+</td>
+<td style="text-align:right;">
+31.2
+</td>
+<td style="text-align:right;">
+44
+</td>
+<td style="text-align:right;">
+21.12
+</td>
+<td style="text-align:right;">
+10.92
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>We will calculate CIs and see if they overlap:</p>
+<pre class="r"><code>experience_stats &lt;- omega %&gt;%
+  group_by(gender) %&gt;%
+  summarise(mean_experience=mean(experience),
+            sd_experience=sd(experience),
+            count=n(),
+            t_critical=qt(0.975,count-1),
+            se=sd_experience/sqrt(count),
+            margin_of_error=t_critical*se,
+            lower_ci=mean_experience-margin_of_error,
+            upper_ci=mean_experience+margin_of_error) 
+
+experience_stats %&gt;%
+  knitr::kable(bootstrap_options = c (&quot;striped&quot;,&quot;hover&quot;,&quot;condensed&quot;,&quot;responsive&quot;)) %&gt;%
+  kableExtra::kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+gender
+</th>
+<th style="text-align:right;">
+mean_experience
+</th>
+<th style="text-align:right;">
+sd_experience
+</th>
+<th style="text-align:right;">
+count
+</th>
+<th style="text-align:right;">
+t_critical
+</th>
+<th style="text-align:right;">
+se
+</th>
+<th style="text-align:right;">
+margin_of_error
+</th>
+<th style="text-align:right;">
+lower_ci
+</th>
+<th style="text-align:right;">
+upper_ci
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+7.38
+</td>
+<td style="text-align:right;">
+8.51
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:right;">
+2.06
+</td>
+<td style="text-align:right;">
+1.67
+</td>
+<td style="text-align:right;">
+3.44
+</td>
+<td style="text-align:right;">
+3.95
+</td>
+<td style="text-align:right;">
+10.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+21.12
+</td>
+<td style="text-align:right;">
+10.92
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+2.07
+</td>
+<td style="text-align:right;">
+2.23
+</td>
+<td style="text-align:right;">
+4.61
+</td>
+<td style="text-align:right;">
+16.52
+</td>
+<td style="text-align:right;">
+25.7
+</td>
+</tr>
+</tbody>
+</table>
+<p>The 95% confidence intervals do not overlap. The confidence interval for male experience looks to be significantly higher than female. We can conclude that there is a significant difference of average experience across genders.</p>
+<p>We perform similar analyses as in the previous section.</p>
+<p><span class="math inline">\(H_0: \mu_{male}-\mu_{female}= 0\)</span> vs
+<span class="math inline">\(H_1: \mu_{male}-\mu_{female}\neq 0\)</span></p>
+<pre class="r"><code>t.test(experience~gender,data=omega)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  experience by gender
+## t = -5, df = 43, p-value = 1e-05
+## alternative hypothesis: true difference in means between group female and group male is not equal to 0
+## 95 percent confidence interval:
+##  -19.35  -8.13
+## sample estimates:
+## mean in group female   mean in group male 
+##                 7.38                21.12</code></pre>
+<p>The hypothesis test confirms our previous findings. The p-value is approximately 0 so we reject the null hypothesis and conclude that average experience of males and females is significantly different. This conclusion can be used as the reason why males earn more than females in the company which is what we discovered in our previous analysis.</p>
+</div>
+<div id="relationship-salary---experience" class="section level2">
+<h2>Relationship Salary - Experience ?</h2>
+<p>Someone at the meeting argues that clearly, a more thorough analysis of
+the relationship between salary and experience is required before any
+conclusion can be drawn about whether there is any gender-based salary
+discrimination in the company.</p>
+<p>Let’s analyse the relationship between salary and experience and draw a
+scatterplot to visually inspect the data.</p>
+<pre class="r"><code>ggplot(omega, aes(x=experience, y=salary))+
+  geom_point()+
+  theme_bw()+
+  geom_smooth(method=lm)+
+  labs(
+    title=&quot;Relationship between salary and experience&quot;,
+    x=&quot;Experience (in years)&quot;,
+    y=&quot;Salary&quot;
+  )</code></pre>
+<p><img src="/blogs/office_data_files/figure-html/salary_exp_scatter-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="check-correlations-between-the-data" class="section level2">
+<h2>Check correlations between the data</h2>
+<p>We use <code>GGally:ggpairs()</code> to create a scatterplot and correlation
+matrix.</p>
+<pre class="r"><code>omega %&gt;% 
+  select(gender, experience, salary) %&gt;% #order variables they will appear in ggpairs()
+  ggpairs(aes(colour=gender, alpha = 0.3))+
+  theme_bw()</code></pre>
+<p><img src="/blogs/office_data_files/figure-html/ggpairs%20for%20gender%20experience%20and%20salary-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>From the scatterplot, it is evident that as years of experience increase the salary increases as well. There is a positive correlation between the two variables. This is expected as normally more experienced individual are at higher, managerial positions which are paid more.<br />
+This increase in pay is more evident for the first 20 years of experience and after that it looks like it levels off. This is also because there aren’t many employees with experience more than 25 years, and those must be at the highest earning potential in the company.</p>
+<p>Now, looking at the gender as well, we earlier concluded that males have more experience than females and as salary increases with experience, it is reasonable that males earn more than females.</p>
+<p>that the US has been experiencing a slight increase in the percentage of GDP in household spending of about 5% and has a trade deficit over the years that is as low as 5%. Whereas for Germany where Household spending seems to slightly decrease, net exports have increased from having a trade deficit a few decades ago to a surplus of about 8%.</p>
+<p>Generally, for developed countries in the long term, the proportions of all four components of GDP should see less variability than the proportions for emerging countries. This is exactly what is shown by the comparison between developed countries (Germany, US) and emerging economy (India).</p>
+</div>
