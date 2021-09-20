@@ -3,7 +3,7 @@ title: "CV"
 date: '2017-10-31T22:42:51-05:00'
 description: null
 draft: no
-image: null
+image: about_me.jpg
 keywords: ''
 slug: cv
 categories:
@@ -33,19 +33,19 @@ library(openintro)
 
 # EDUCATION   
 
-2021 - 2022	London Business School, London, United Kingdom  
+## 2021 - 2022	London Business School, London, United Kingdom  
 Reading for Masters in Analytics and Management   
 GMAT: 720   
 Women\'s Merit Scholar   
 
-2018 - 2021	University Of Bath, Bath, United Kingdom   
+## 2018 - 2021	University Of Bath, Bath, United Kingdom   
 BSc (Hons) Mathematics, Overall Programme average 78.55/100, First Class Honours   
 Modules include Applied Statistics, Introduction to Econometrics, Generalized Linear Models   
 
 # BUSINESS EXPERIENCE 
 
 ## 2021 AXIOM CONSULTING LTD, Nicosia, Cyprus   
-Loyalty management and relationship marketing Business Analytics Intern (2 months)   
+### Loyalty management and relationship marketing Business Analytics Intern (2 months)   
 
 
 -	Researched and collected information regarding customer segmentation and targeted advertising,   
@@ -56,7 +56,7 @@ feedback and mentoring
 
 
 ## 2020	PWC, Nicosia, Cyprus \n
-Advisory Intern (1 month) \n
+### Advisory Intern (1 month) \n
 
 
 -	Conducted research on how European countries are developing AI and managed a large database in    
@@ -66,7 +66,8 @@ Excel using functions, to assist with a data analytics project with the European
 Tableau and Alteryx and created useful insights for data-driven team project
 - Experienced half of internship remotely, due to Covid-19, learning to communicate and work digitally and    productively from home
 
-## 2019	ARCH INSURANCE GROUP, Nicosia, Cyprus Actuary Intern (1 month) 
+## 2019	ARCH INSURANCE GROUP, Nicosia, Cyprus 
+### Actuary Intern (1 month) 
 
 
 -	Took an introductory Data Camp SQL course and utilized acquired knowledge to perform an analysis report on a medical company, by creating SQL queries to extract information about patient records
