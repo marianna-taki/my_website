@@ -121,6 +121,8 @@ male_proportion
 female_proportion
 ```
 
+As we observe the two confidence intervals do not overlap. This means that there is indeed a significant difference in the proportion of women using Snapchat or Instagram compared to men. A larger proportion of women tend to use these socials.
+
 
 ## Twitter, by education level
 
