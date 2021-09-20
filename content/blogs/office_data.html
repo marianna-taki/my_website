@@ -16,7 +16,8 @@ title: Investigating pay discrimination in Omega Plc
 <link href="/rmarkdown-libs/lightable/lightable.css" rel="stylesheet" />
 
 
-<p># Omega Group plc- Pay Discrimination</p>
+<div id="omega-group-plc--pay-discrimination" class="section level1">
+<h1>Omega Group plc- Pay Discrimination</h1>
 <p>At the last board meeting of Omega Group Plc., the headquarters of a
 large multinational company, the issue was raised that women were being
 discriminated in the company, in the sense that the salaries were not
@@ -29,131 +30,6 @@ the company salaries was warranted.</p>
 difference between the salaries of men and women, and whether the
 difference is due to discrimination or whether it is based on another,
 possibly valid, determining factor.</p>
-<div id="loading-the-data" class="section level2">
-<h2>Loading the data</h2>
-<pre class="r"><code>omega &lt;- read_csv(here::here(&quot;data&quot;, &quot;omega.csv&quot;))
-glimpse(omega) # examine the data frame</code></pre>
-<pre><code>## Rows: 50
-## Columns: 3
-## $ salary     &lt;dbl&gt; 81894, 69517, 68589, 74881, 65598, 76840, 78800, 70033, 635…
-## $ gender     &lt;chr&gt; &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;ma…
-## $ experience &lt;dbl&gt; 16, 25, 15, 33, 16, 19, 32, 34, 1, 44, 7, 14, 33, 19, 24, 3…</code></pre>
-<pre class="r"><code>skim(omega)</code></pre>
-<table>
-<caption>(#tab:load_omega_data)Data summary</caption>
-<tbody>
-<tr class="odd">
-<td align="left">Name</td>
-<td align="left">omega</td>
-</tr>
-<tr class="even">
-<td align="left">Number of rows</td>
-<td align="left">50</td>
-</tr>
-<tr class="odd">
-<td align="left">Number of columns</td>
-<td align="left">3</td>
-</tr>
-<tr class="even">
-<td align="left">_______________________</td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
-<td align="left">Column type frequency:</td>
-<td align="left"></td>
-</tr>
-<tr class="even">
-<td align="left">character</td>
-<td align="left">1</td>
-</tr>
-<tr class="odd">
-<td align="left">numeric</td>
-<td align="left">2</td>
-</tr>
-<tr class="even">
-<td align="left">________________________</td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
-<td align="left">Group variables</td>
-<td align="left">None</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Variable type: character</strong></p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="right">min</th>
-<th align="right">max</th>
-<th align="right">empty</th>
-<th align="right">n_unique</th>
-<th align="right">whitespace</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">gender</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">6</td>
-<td align="right">0</td>
-<td align="right">2</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Variable type: numeric</strong></p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="right">mean</th>
-<th align="right">sd</th>
-<th align="right">p0</th>
-<th align="right">p25</th>
-<th align="right">p50</th>
-<th align="right">p75</th>
-<th align="right">p100</th>
-<th align="left">hist</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">salary</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">68717</td>
-<td align="right">8638.2</td>
-<td align="right">47033</td>
-<td align="right">63303.16</td>
-<td align="right">68847</td>
-<td align="right">74777.7</td>
-<td align="right">84576</td>
-<td align="left">▁▃▇▆▅</td>
-</tr>
-<tr class="even">
-<td align="left">experience</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">14</td>
-<td align="right">11.9</td>
-<td align="right">0</td>
-<td align="right">2.25</td>
-<td align="right">15</td>
-<td align="right">20.8</td>
-<td align="right">44</td>
-<td align="left">▇▃▅▂▁</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div id="relationship-salary---gender" class="section level2">
 <h2>Relationship Salary - Gender ?</h2>
 <p>The data frame <code>omega</code> contains the salaries for the sample of 50 executives in the company.</p>
@@ -706,4 +582,5 @@ This increase in pay is more evident for the first 20 years of experience and af
 <p>Now, looking at the gender as well, we earlier concluded that males have more experience than females and as salary increases with experience, it is reasonable that males earn more than females.</p>
 <p>that the US has been experiencing a slight increase in the percentage of GDP in household spending of about 5% and has a trade deficit over the years that is as low as 5%. Whereas for Germany where Household spending seems to slightly decrease, net exports have increased from having a trade deficit a few decades ago to a surplus of about 8%.</p>
 <p>Generally, for developed countries in the long term, the proportions of all four components of GDP should see less variability than the proportions for emerging countries. This is exactly what is shown by the comparison between developed countries (Germany, US) and emerging economy (India).</p>
+</div>
 </div>
