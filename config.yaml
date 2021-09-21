@@ -92,7 +92,7 @@ params:
       - image: cinema.jpg
         subtitle: Steven Spielberg vs Tim Burton
         title: IMDB Ratings
-        url: blogs/imdb_ratings
+        url: blogs/imdb_movie
   two:
     buttonText: Find out more
     enable: yes

@@ -5,7 +5,7 @@ description: Steven Spielberg vs Tim Burton
 draft: no
 image: cinema.jpg
 keywords: ''
-slug: imdb_movies
+slug: imdb_movie
 categories:
 - ''
 - ''
